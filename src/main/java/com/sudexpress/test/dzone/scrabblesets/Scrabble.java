@@ -60,7 +60,7 @@ public class Scrabble {
 		this.tiles.get(letter).pick();
 	}
 
-	public String remainingBag(final String letters) {
+	public String remainingLetters(final String letters) {
 		try {
 			this.pickAll(letters);
 			final Map<Integer, List<Tile>> tilesByCounts = this.groupTilesByCounts();

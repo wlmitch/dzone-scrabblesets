@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -19,9 +20,6 @@ import java.util.Map;
 
 import org.junit.Assert;
 import org.junit.Test;
-
-import com.sudexpress.test.dzone.scrabblesets.Scrabble;
-import com.sudexpress.test.dzone.scrabblesets.Tile;
 
 public class ScrabbleTest extends AbstractTest<Scrabble> {
 
@@ -35,7 +33,7 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 				+ "3: S, U\n"
 				+ "2: B, C, F, G, M, V, Y\n"
 				+ "1: H, J, K, P, W, X, Z, _\n"
-				+ "0: Q", this.test.remainingBag("PQAREIOURSTHGWIOAE_"));
+				+ "0: Q", this.test.remainingLetters("PQAREIOURSTHGWIOAE_"));
 	}
 
 	@Test
@@ -48,12 +46,12 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 				+ "3: G, L\n"
 				+ "2: B, C, H, M, P, V, W, Y, _\n"
 				+ "1: K, X\n"
-				+ "0: F, J, Q, Z", this.test.remainingBag("LQTOONOEFFJZT"));
+				+ "0: F, J, Q, Z", this.test.remainingLetters("LQTOONOEFFJZT"));
 	}
 
 	@Test
 	public void test3() {
-		Assert.assertEquals("Invalid input. More X's have been taken from the bag than possible.", this.test.remainingBag("AXHDRUIOR_XHJZUQEE"));
+		Assert.assertEquals("Invalid input. More X's have been taken from the bag than possible.", this.test.remainingLetters("AXHDRUIOR_XHJZUQEE"));
 	}
 
 	@Test
@@ -73,15 +71,23 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 	}
 
 	@Test
-	public void remainingBag() throws Exception {
+	public void remainingLetters() throws Exception {
 		final Map<Integer, List<Tile>> tilesByCounts = new HashMap<>();
 		doReturn(tilesByCounts).when(this.test).groupTilesByCounts();
 
-		this.test.remainingBag("AB");
+		this.test.remainingLetters("AB");
 
 		verify(this.test).pickAll("AB");
 		verify(this.test).groupTilesByCounts();
 		verify(this.test).outputLines(tilesByCounts);
+	}
+
+	@Test
+	public void remainingLettersWithError() throws Exception {
+		final NotEnoughTilesException exception = new NotEnoughTilesException("a");
+		doThrow(exception).when(this.test).pickAll("a");
+
+		assertEquals(exception.getMessage(), this.test.remainingLetters("a"));
 	}
 
 	@Test
@@ -94,6 +100,13 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 		verify(this.test).pickOne("B");
 	}
 
+	@Test(expected = NotEnoughTilesException.class)
+	public void pickAllWithError() throws Exception {
+		doThrow(new NotEnoughTilesException("A")).when(this.test).pickOne("A");
+
+		this.test.pickAll("A");
+	}
+
 	@Test
 	public void pickOne() throws Exception {
 		final Tile tile = mock(Tile.class);
@@ -102,6 +115,15 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 		this.test.pickOne("A");
 
 		verify(tile).pick();
+	}
+
+	@Test(expected = NotEnoughTilesException.class)
+	public void pickOneWithError() throws Exception {
+		final Tile tile = mock(Tile.class);
+		this.test.tiles.put("A", tile);
+		doThrow(new NotEnoughTilesException("A")).when(tile).pick();
+
+		this.test.pickOne("A");
 	}
 
 	@Test
