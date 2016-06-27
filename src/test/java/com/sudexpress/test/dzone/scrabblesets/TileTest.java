@@ -1,6 +1,7 @@
 package com.sudexpress.test.dzone.scrabblesets;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
@@ -10,11 +11,11 @@ public class TileTest {
 	public void pick() throws Exception {
 		final Tile tile = new Tile("a", 1);
 
-		assertEquals(1, tile.getCount());
+		assertThat(tile.getCount(), is(1));
 
 		tile.pick();
 
-		assertEquals(0, tile.getCount());
+		assertThat(tile.getCount(), is(0));
 
 		tile.pick();
 	}

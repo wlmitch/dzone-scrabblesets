@@ -1,9 +1,12 @@
 package com.sudexpress.test.dzone.scrabblesets;
 
 import static java.util.Arrays.asList;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.doNothing;
@@ -24,8 +27,20 @@ import org.junit.Test;
 public class ScrabbleTest extends AbstractTest<Scrabble> {
 
 	@Test
+	public void test0() {
+		assertThat(this.test.remainingLetters(""), is("12: E\n"
+				+ "9: A, I\n"
+				+ "8: O\n"
+				+ "6: N, R, T\n"
+				+ "4: D, L, S, U\n"
+				+ "3: G\n"
+				+ "2: B, C, F, H, M, P, V, W, Y, _\n"
+				+ "1: J, K, Q, X, Z"));
+	}
+
+	@Test
 	public void test1() {
-		Assert.assertEquals("10: E\n"
+		assertThat(this.test.remainingLetters("PQAREIOURSTHGWIOAE_"), is("10: E\n"
 				+ "7: A, I\n"
 				+ "6: N, O\n"
 				+ "5: T\n"
@@ -33,12 +48,12 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 				+ "3: S, U\n"
 				+ "2: B, C, F, G, M, V, Y\n"
 				+ "1: H, J, K, P, W, X, Z, _\n"
-				+ "0: Q", this.test.remainingLetters("PQAREIOURSTHGWIOAE_"));
+				+ "0: Q"));
 	}
 
 	@Test
 	public void test2() {
-		Assert.assertEquals("11: E\n"
+		assertThat(this.test.remainingLetters("LQTOONOEFFJZT"), is("11: E\n"
 				+ "9: A, I\n"
 				+ "6: R\n"
 				+ "5: N, O\n"
@@ -46,7 +61,7 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 				+ "3: G, L\n"
 				+ "2: B, C, H, M, P, V, W, Y, _\n"
 				+ "1: K, X\n"
-				+ "0: F, J, Q, Z", this.test.remainingLetters("LQTOONOEFFJZT"));
+				+ "0: F, J, Q, Z"));
 	}
 
 	@Test
@@ -136,13 +151,13 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 		final Map<Integer, List<Tile>> tilesByCounts = this.test.groupTilesByCounts();
 
 		// Always an object
-		assertNotNull(tilesByCounts);
+		assertThat(tilesByCounts, is(notNullValue()));
 		// 2 Tiles with count 1
-		assertTrue(tilesByCounts.containsKey(1));
-		assertEquals(2, tilesByCounts.get(1).size());
+		assertThat(tilesByCounts.containsKey(1), is(true));
+		assertThat(tilesByCounts.get(1).size(), is(2));
 		// 1 Tile with count 1
-		assertTrue(tilesByCounts.containsKey(2));
-		assertEquals(1, tilesByCounts.get(2).size());
+		assertThat(tilesByCounts.containsKey(2), is(true));
+		assertThat(tilesByCounts.get(2).size(), is(1));
 	}
 
 	@Test
@@ -162,10 +177,10 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 		final List<String> outputLines = this.test.outputLines(tilesByCounts);
 
 		// Verify the output
-		assertNotNull(outputLines);
-		assertEquals(2, outputLines.size());
-		assertEquals("line2", outputLines.get(0));
-		assertEquals("line1", outputLines.get(1));
+		assertThat(outputLines, is(notNullValue()));
+		assertThat(outputLines.size(), is(2));
+		assertThat(outputLines.get(0), is("line2"));
+		assertThat(outputLines.get(1), is("line1"));
 	}
 
 	@Test
@@ -173,7 +188,8 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 		final List<Tile> tiles = new ArrayList<>();
 		doReturn("letters").when(this.test).stringOfSorted(tiles);
 
-		assertEquals("1: letters", this.test.outputLine(1, tiles));
+		final String outputLine = this.test.outputLine(1, tiles);
+		assertThat(outputLine, is("1: letters"));
 	}
 
 	@Test
@@ -181,7 +197,8 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 		final List<Tile> tiles = new ArrayList<>();
 		doReturn(asList("A", "B", "C")).when(this.test).extractSortedLetters(tiles);
 
-		assertEquals("A, B, C", this.test.stringOfSorted(tiles));
+		final String sortedLetters = this.test.stringOfSorted(tiles);
+		assertThat(sortedLetters, is("A, B, C"));
 	}
 
 	@Test
@@ -190,11 +207,11 @@ public class ScrabbleTest extends AbstractTest<Scrabble> {
 
 		final List<String> letters = this.test.extractSortedLetters(tiles);
 
-		assertNotNull(letters);
-		assertEquals(3, letters.size());
-		assertEquals("a", letters.get(0));
-		assertEquals("b", letters.get(1));
-		assertEquals("c", letters.get(2));
+		assertThat(letters, is(notNullValue()));
+		assertThat(letters.size(), is(3));
+		assertThat(letters.get(0), is("a"));
+		assertThat(letters.get(1), is("b"));
+		assertThat(letters.get(2), is("c"));
 	}
 
 }

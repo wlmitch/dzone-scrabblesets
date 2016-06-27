@@ -51,8 +51,10 @@ public class Scrabble {
 	}
 
 	void pickAll(final String letters) throws NotEnoughTilesException {
-		for (final String letter : letters.split("")) {
-			this.pickOne(letter);
+		if (letters != null && !letters.isEmpty()) {
+			for (final String letter : letters.split("")) {
+				this.pickOne(letter);
+			}
 		}
 	}
 
